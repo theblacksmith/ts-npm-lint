@@ -1,4 +1,5 @@
-# ts-npm-lint
+# ts-package-lint
+
 Utility to create typescript based npm modules. Can also strip reference paths for .d.ts files and check TSD configs.
 
 Building strongly typed npm modules using typescript is quite tricky.
@@ -17,48 +18,71 @@ import coolPackage from "your-cool-package".
 
 ## Installation
 
-`npm install -g ts-npm-lint`
+### Globally
 
-## Usage
+`npm install -g ts-package-lint`
 
-Run `ts-npm-lint` in the root of your package to get information about your current setup.
+#### Usage
 
-Run `ts-npm-lint --fix-typings` to strip triple slash references from your typing files so that they can be used by directly by other packages.
+Run `ts-package-lint` in the root of your package to get information about your current setup.
+
+Run `ts-package-lint --fix-typings` to strip triple slash references from your typing files so that they can be used by directly by other packages.
 Probably this should be part of your build process, after running the typescript compiler.
-In that case just run `npm install ts-npm-lint --save-dev` and add something like `"build": "tsc && ts-npm-lint --fix-typings"` to the `scripts` section of your `package.json`. 
+In that case just run `npm install ts-package-lint --save-dev` and add something like `"build": "tsc && ts-package-lint --fix-typings"` to the `scripts` section of your `package.json`.
+
+
+### As a development dependency
+
+`npm install --save-dev ts-package-lint`
+
+Then add it to the `scripts` property of you `package.json`
+
+```
+...
+  "scripts": {
+    ...
+    "lint-pkg": "ts-package-lint"
+    ...
+  }
+...
+```
+
+And run it...
+
+`npm run lint-pkg`
 
 ## Example output
 
-To get an idea of the things ts-npm-lint checks, here the output of the tool on different packages:
+To get an idea of the things ts-package-lint checks, here the output of the tool on different packages:
 
 ```
-[ts-npm-lint] package.json doesn't declare a 'typings' entry file. Please include an entry file (without extension), e.g: "typings": "lib/index"
+[ts-package-lint] package.json doesn't declare a 'typings' entry file. Please include an entry file (without extension), e.g: "typings": "lib/index"
 
-[ts-npm-lint] typescript is not registered as build dependency, please install it using 'npm install typescript --save-dev'
+[ts-package-lint] typescript is not registered as build dependency, please install it using 'npm install typescript --save-dev'
 
-[ts-npm-lint] No 'tsconfig.json' was found. Please use it to define the default build parameters. See: https://github.com/Microsoft/TypeScript/wiki/tsconfig.json
+[ts-package-lint] No 'tsconfig.json' was found. Please use it to define the default build parameters. See: https://github.com/Microsoft/TypeScript/wiki/tsconfig.json
 
-[ts-npm-lint] Some dependencies of this package don't ship with own typings. You can install the 'tsd' tool to manage these. Use 'npm install -g tsd'. For more info see: http://definitelytyped.org/tsd/
+[ts-package-lint] Some dependencies of this package don't ship with own typings. You can install the 'tsd' tool to manage these. Use 'npm install -g tsd'. For more info see: http://definitelytyped.org/tsd/
 
-[ts-npm-lint] No *.d.ts files where found in the compilers output directory (.). Please run the typescript compiler first and make sure the 'declaration' option is enabled.
+[ts-package-lint] No *.d.ts files where found in the compilers output directory (.). Please run the typescript compiler first and make sure the 'declaration' option is enabled.
 ```
 
 ```
-[ts-npm-lint] Some dependencies of this package don't ship with their own typings. You can install the 'tsd' tool to manage these. Use 'npm install -g tsd'. For more info see: http://definitelytyped.org/tsd/. Packages without typings:
+[ts-package-lint] Some dependencies of this package don't ship with their own typings. You can install the 'tsd' tool to manage these. Use 'npm install -g tsd'. For more info see: http://definitelytyped.org/tsd/. Packages without typings:
   lodash, node-uuid, restler, node
 ```
 
 ```
-[ts-npm-lint] It is recommended to set the compiler output directory using the "outDir" option, so that the typescript sources can be put into .npmignore, and the output files and declaration files in .gitignore. e.g: '"outDir": "lib/"'
+[ts-package-lint] It is recommended to set the compiler output directory using the "outDir" option, so that the typescript sources can be put into .npmignore, and the output files and declaration files in .gitignore. e.g: '"outDir": "lib/"'
 
-[ts-npm-lint] Please mention in the documentation of your package that the following typings might need to be installed using 'tsd install <package> --save':
+[ts-package-lint] Please mention in the documentation of your package that the following typings might need to be installed using 'tsd install <package> --save':
   when, rest, node, lodash, xml2js, jsonpath, assertion-error, chai, mocha, promises-a-plus, chai-as-promised, nock
 
-[ts-npm-lint] Found '/// <reference path' d.ts file includes in the following .d.ts files:
+[ts-package-lint] Found '/// <reference path' d.ts file includes in the following .d.ts files:
 
   ./test/smoke-test.d.ts: /// <reference path="../typings/tsd.d.ts" />
 
-[ts-npm-lint] Please remove those references to make your typings usable for package consumers. Keeping triple slash references might collide with typings used in consuming packages. Remove triple slash references by running 'ts-npm-lint --fix-typings' as part of your build process.
+[ts-package-lint] Please remove those references to make your typings usable for package consumers. Keeping triple slash references might collide with typings used in consuming packages. Remove triple slash references by running 'ts-package-lint --fix-typings' as part of your build process.
 ```
 
 One might find some of the hints opiniated. If it raises any questions, please feel free to file an isue for an explanation!

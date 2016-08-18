@@ -1,7 +1,7 @@
 {
-  "name": "ts-npm-lint",
-  "version": "0.1.0",
-  "description": "Utility to create typescript based npm modules. Can also strip reference paths for .d.ts files and check TSD configs.",
+  "name": "ts-package-lint",
+  "version": "0.2.0",
+  "description": "Utility to create typescript based npm modules. Can also strip reference paths for .d.ts files and check TSD/Typings configs.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,21 +11,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/mweststrate/ts-npm-lint.git"
+    "url": "git+ssh://git@github.com/theblacksmith/ts-package-lint.git"
   },
   "keywords": [
     "npm",
     "typescript",
     "package",
     "lint",
-    "tsd"
+    "tsd",
+    "typings"
   ],
   "author": "Michel Weststrate",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mweststrate/ts-npm-lint/issues"
+    "url": "https://github.com/theblacksmith/ts-package-lint/issues"
   },
-  "homepage": "https://github.com/mweststrate/ts-npm-lint#readme",
+  "homepage": "https://github.com/theblacksmith/ts-package-lint#readme",
   "dependencies": {
     "chalk": "^1.1.1",
     "glob": "^6.0.1"

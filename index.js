@@ -16,16 +16,16 @@ function analyze() {
 	if (!fs.existsSync('package.json')) {
 		exit(1, "Expected a file 'package.json' in the current directory. Pleare run ts-npm-lint in the root of a package");
 	}
-	
+
 	var pkgJson = JSON.parse(read('package.json'));
-	
+
 	if (!pkgJson.main)
 		hint("package.json didn't declare a 'main' entry file. Please include an entry file, e.g: \"main\": \"lib/index.js\"");
 	if (!pkgJson.typings)
 		hint("package.json doesn't declare a 'typings' entry file. Please include an entry file (without extension), e.g: \"typings\": \"lib/index\"");
 	if (!pkgJson.devDependencies || !pkgJson.devDependencies.typescript)
 		hint("typescript is not registered as build dependency, please install it using 'npm install typescript --save-dev'");
-	
+
 	if (!fs.existsSync('tsconfig.json')) {
 		hint("No 'tsconfig.json' was found. Please use it to define the default build parameters. See: https://github.com/Microsoft/TypeScript/wiki/tsconfig.json");
 	} else {
@@ -56,36 +56,55 @@ function analyze() {
 				depInfo.push([dep, !!subPackage.typings]);
 			}
 		});
-		
+
 		// recommend 'node' typings as well.
 		depInfo.push(["node", false]);
-		
+
 		var needsTsd = depInfo.some(function(entry) {
 			return entry[1] === false;
 		});
-		var hasTsd = fs.existsSync('tsd.json');
+		var hasTsd = fs.existsSync('tsd.json') ? 'tsd' : fs.existsSync('typings.json') ? 'typings' : false;
 		if (needsTsd && !hasTsd)
-			hint("Some dependencies of this package don't ship with their own typings. You can install the 'tsd' tool to manage these. Use 'npm install -g tsd'. For more info see: http://definitelytyped.org/tsd/. Packages without typings:\n  " + 
+			hint("Some dependencies of this package don't ship with their own typings. You can install the 'tsd' tool to manage these. Use 'npm install -g tsd'. For more info see: http://definitelytyped.org/tsd/. Packages without typings:\n  " +
 				depInfo.filter(function(e) { return !e[1]; }).map(function(e) { return e[0]; }).join(', ')
 			);
 		if (hasTsd) {
-			var tsdInfo = JSON.parse(read('tsd.json'));
-			var installed = (tsdInfo.installed ? Object.keys(tsdInfo.installed) : []).map(function(name) {
-				return name.split("/")[0];
-			});
+			if('tsd' == hasTsd) {
+				var tsdInfo = JSON.parse(read('tsd.json'));
+				var installed = (tsdInfo.installed ? Object.keys(tsdInfo.installed) : []).map(function(name) {
+					return name.split("/")[0];
+				});
 
-			depInfo.forEach(function (entry) {
-				var name = entry[0];
-				if (entry[1] && installed.indexOf(name) !== -1)
-					hint("A tsd typing for the package '" + name + "' was installed, yet it ships with its own typing!");
-				if (!entry[1] && installed.indexOf(name) === -1)
-					hint("No tsd typing were installed for package '" + name + "', try to use 'tsd install " + name + " --save' to be able to use strongly typed package imports.");
-			});
-			
-			hint("Please mention in the documentation of your package that the following typings might need to be installed using 'tsd install <package> --save':\n  " + installed.join(', '));
+				depInfo.forEach(function (entry) {
+					var name = entry[0];
+					if (entry[1] && installed.indexOf(name) !== -1)
+						hint("A tsd typing for the package '" + name + "' was installed, yet it ships with its own typing!");
+					if (!entry[1] && installed.indexOf(name) === -1)
+						hint("No tsd typing were installed for package '" + name + "', try to use 'tsd install " + name + " --save' to be able to use strongly typed package imports.");
+				});
+
+				hint("Please mention in the documentation of your package that the following typings might need to be installed using 'tsd install <package> --save':\n  " + installed.join(', '));
+			}
+			else {
+				var typingsInfo = JSON.parse(read('typings.json'));
+				var installed = Object.keys(typingsInfo)
+						.reduce(function(prev, curr) {
+							return prev.concat(Object.keys(typingsInfo[curr]));
+						}, []);
+
+				depInfo.forEach(function (entry) {
+					var name = entry[0];
+					if (entry[1] && installed.indexOf(name) !== -1)
+						hint("A tsd typing for the package '" + name + "' was installed, yet it ships with its own typing!");
+					if (!entry[1] && installed.indexOf(name) === -1)
+						hint("No typings were installed for package '" + name + "', you can use 'typings search " + name + "' to be try to find the package typings.");
+				});
+
+				hint("Please mention in the documentation of your package that the following typings might need to be installed using 'typings install <package> --save':\n  " + installed.join(', '));
+			}
 		}
 	}
-	
+
 	var dTsFiles = findDtsFiles(outDir);
 	if (dTsFiles.length === 0) {
 		hint("No *.d.ts files where found in the compilers output directory ("+ outDir + "). Please run the typescript compiler first and make sure the 'declaration' option is enabled.");
@@ -105,14 +124,14 @@ function analyze() {
 				res.push.apply(res, lines);
 				return res;
 			}, []);
-		
+
 		if (foundReferences.length > 0) {
 			hint("Found '/// <reference path' d.ts file includes in the following .d.ts files:");
 			foundReferences.forEach(function(line) {
 				console.log(line);
 			});
 			console.log();
-			hint("Please remove those references to make your typings usable for package consumers. " + 
+			hint("Please remove those references to make your typings usable for package consumers. " +
 			     "Keeping triple slash references might collide with typings used in consuming packages. " +
 			     "Remove triple slash references by running 'ts-npm-lint --fix-typings' as part of your build process.");
 		}
