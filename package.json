@@ -1,6 +1,6 @@
 {
   "name": "ts-package-lint",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Utility to create typescript based npm modules. Can also strip reference paths for .d.ts files and check TSD/Typings configs.",
   "main": "index.js",
   "scripts": {

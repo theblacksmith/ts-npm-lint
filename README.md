@@ -6,7 +6,7 @@ Building strongly typed npm modules using typescript is quite tricky.
 Especially if your package depends on other packages and you want to offer typings to consumers of your module.
 This tool checks your `package.json`, `tsconfig.json` and `tsd.json` files to verify your setup.
 
-The goal of this tool that _your_ npm package consumers can ultimately just do the following:
+The goal of this tool is to help _you_ build a package that consumers can ultimately just do the following:
 
 `npm install your-cool-page --save`
 
@@ -26,7 +26,7 @@ import coolPackage from "your-cool-package".
 
 Run `ts-package-lint` in the root of your package to get information about your current setup.
 
-Run `ts-package-lint --fix-typings` to strip triple slash references from your typing files so that they can be used by directly by other packages.
+Run `ts-package-lint --fix-typings` to strip triple slash references from your typing files so that they can be used directly by other packages.
 Probably this should be part of your build process, after running the typescript compiler.
 In that case just run `npm install ts-package-lint --save-dev` and add something like `"build": "tsc && ts-package-lint --fix-typings"` to the `scripts` section of your `package.json`.
 
@@ -97,7 +97,7 @@ A: Didn't test, but it should.
 
 ## Future ideas
 
-* Query tsd to see whether typings are available
-* Instead of prosing a solution, apply a solution
+* Query tsd/typings to see whether typings are available
+* Instead of proposing a solution, apply a solution
 * Add option to only fix typings in a specified dir
 * Check typescript version (1.6+ required)
