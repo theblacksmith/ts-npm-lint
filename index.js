@@ -14,7 +14,7 @@ function analyze() {
 	var outDir = ".";
 
 	if (!fs.existsSync('package.json')) {
-		exit(1, "Expected a file 'package.json' in the current directory. Pleare run ts-npm-lint in the root of a package");
+		exit(1, "Expected a file 'package.json' in the current directory. Pleare run ts-package-lint in the root of a package");
 	}
 
 	var pkgJson = JSON.parse(read('package.json'));
@@ -133,7 +133,7 @@ function analyze() {
 			console.log();
 			hint("Please remove those references to make your typings usable for package consumers. " +
 			     "Keeping triple slash references might collide with typings used in consuming packages. " +
-			     "Remove triple slash references by running 'ts-npm-lint --fix-typings' as part of your build process.");
+			     "Remove triple slash references by running 'ts-package-lint --fix-typings' as part of your build process.");
 		}
 	}
 }
@@ -151,8 +151,8 @@ function fixTypings() {
 	dtsFiles.forEach(function(file) {
 		var match = false;
 		var contents = read(file).replace(/^\/\/\/ <reference path="(.*)" \/>/gm, function(_, tsdFile) {
-			console.log("[ts-npm-lint] Removed reference to '" + tsdFile + "' in " + file);
-			return "// [ts-npm-lint] disabled triple slash reference to '" + tsdFile + "'";
+			console.log("[ts-package-lint] Removed reference to '" + tsdFile + "' in " + file);
+			return "// [ts-package-lint] disabled triple slash reference to '" + tsdFile + "'";
 		});
 		fs.writeFileSync(file, contents,'utf8');
 	});
@@ -166,12 +166,12 @@ function findDtsFiles(dir) {
 }
 
 function hint(msg) {
-	console.log(chalk.dim("[ts-npm-lint]") + " " + msg);
+	console.log(chalk.dim("[ts-package-lint]") + " " + msg);
 	console.log();
 }
 
 function exit(nr, msg) {
-	console.error(chalk.red("[ts-npm-lint] ") + msg);
+	console.error(chalk.red("[ts-package-lint] ") + msg);
 	process.exit(nr);
 }
 
